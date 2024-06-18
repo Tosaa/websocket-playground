@@ -37,6 +37,7 @@ actual class ServerImpl : Server {
                 websocket = MyWebSocketServer(
                     port = it,
                     onConnected = { socket ->
+
                         val existingSocket =
                             _connections.value.firstOrNull { it.identifier == socket.resourceDescriptor }
                         if (existingSocket == null) {
