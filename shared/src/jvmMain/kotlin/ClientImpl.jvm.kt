@@ -3,13 +3,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
-import javax.swing.text.html.HTML.Tag.S
 
 actual class ClientImpl actual constructor() : Client {
     private var webSocketClient: WebSocketClient? = null
