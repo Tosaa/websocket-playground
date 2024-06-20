@@ -37,11 +37,9 @@ actual class ServerImpl : Server {
                 websocket = MyWebSocketServer(
                     port = it,
                     onConnected = { socket ->
-
-                        val existingSocket =
-                            _connections.value.firstOrNull { it.identifier == socket.resourceDescriptor }
+                        val existingSocket = _connections.value.firstOrNull { it.identifier == socket.remoteSocketAddress.address.toString() }
                         if (existingSocket == null) {
-                            val newConnectionInfo = ConnectionInfo(socket.resourceDescriptor).also {
+                            val newConnectionInfo = ConnectionInfo(socket.remoteSocketAddress.address.toString()).also {
                                 it.setConnected(true)
                             }
                             _connections.value = _connections.value.plus(newConnectionInfo)
@@ -51,9 +49,9 @@ actual class ServerImpl : Server {
                     },
                     onDisconnected = { socket ->
                         val existingSocket =
-                            _connections.value.firstOrNull { it.identifier == socket.resourceDescriptor }
+                            _connections.value.firstOrNull { it.identifier == socket.remoteSocketAddress.address.toString() }
                         if (existingSocket == null) {
-                            val newConnectionInfo = ConnectionInfo(socket.resourceDescriptor).also {
+                            val newConnectionInfo = ConnectionInfo(socket.remoteSocketAddress.address.toString()).also {
                                 it.setConnected(false)
                             }
                             _connections.value = _connections.value.plus(newConnectionInfo)
@@ -62,11 +60,11 @@ actual class ServerImpl : Server {
                         }
                     },
                     onReceivedBytes = { socket, bytes ->
-                        _connections.value.firstOrNull { it.identifier == socket.resourceDescriptor }
+                        _connections.value.firstOrNull { it.identifier == socket.remoteSocketAddress.address.toString() }
                             ?.receivedMessage(bytes)
                     },
                     onError = { socket, error ->
-                        _connections.value.firstOrNull<ConnectionInfo> { it.identifier == socket.resourceDescriptor }
+                        _connections.value.firstOrNull<ConnectionInfo> { it.identifier == socket.remoteSocketAddress.address.toString() }
                             ?.setError(error)
                     }
                 ).also { webSocketServer ->

@@ -19,7 +19,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App() {
+fun App(ipaddress: String = "Unknown IPAddress") {
     MaterialTheme {
         val isServerOpen = remember { mutableStateOf(false) }
         val server = remember { mutableStateOf<Server>(ServerImpl()) }
@@ -29,11 +29,14 @@ fun App() {
             isServerOpen.value && isClientOpen.value -> {
                 Row {
                     Box(Modifier.padding(4.dp)) {
-                        Server(server.value) {
+                        Server(server.value, ipaddress) {
                             isServerOpen.value = false
                         }
                     }
-                    Spacer(Modifier.width(1.dp).background(Color.LightGray).fillMaxHeight().padding(horizontal = 2.dp))
+                    Spacer(
+                        Modifier.width(1.dp).background(Color.LightGray).fillMaxHeight()
+                            .padding(horizontal = 2.dp)
+                    )
                     Box(Modifier.padding(4.dp)) {
                         Client(client.value) {
                             isClientOpen.value = false
@@ -43,7 +46,7 @@ fun App() {
             }
 
             isServerOpen.value -> Box(Modifier.padding(4.dp)) {
-                Server(server.value) {
+                Server(server.value, ipaddress) {
                     isServerOpen.value = false
                 }
             }
@@ -80,13 +83,16 @@ fun App() {
 
 @OptIn(ExperimentalStdlibApi::class)
 @Composable
-fun Server(server: Server, onBackPressed: () -> Unit) {
+fun Server(server: Server, ipaddress: String, onBackPressed: () -> Unit) {
     Column {
         val isRunning = server.isRunning.collectAsState()
         val port = remember { mutableStateOf("") }
         Row {
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Back arrow", Modifier.clickable { onBackPressed() })
-            Text("Server")
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                "Back arrow",
+                Modifier.clickable { onBackPressed() })
+            Text("Server ($ipaddress)")
         }
         Row {
             TextField(port.value, { port.value = it }, label = { Text("Port") })
@@ -107,7 +113,11 @@ fun Server(server: Server, onBackPressed: () -> Unit) {
             val connected = it.isConnected.collectAsState()
             Column(Modifier.border(1.dp, Color.LightGray).padding(vertical = 4.dp)) {
                 val connectedString = if (connected.value) "Connected" else "Disconnected"
-                OutlinedTextField(it.identifier, {}, readOnly = true, label = { Text("Identifier: $connectedString") })
+                OutlinedTextField(
+                    it.identifier,
+                    {},
+                    readOnly = true,
+                    label = { Text("Identifier: $connectedString") })
                 OutlinedTextField(
                     receivedMessage.value.decodeToString(),
                     {},
@@ -149,7 +159,10 @@ fun Client(client: Client, onBackPressed: () -> Unit) {
         val address = remember { mutableStateOf("192.168.178.40") }
         val port = remember { mutableStateOf("") }
         Row {
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, "Back arrow", Modifier.clickable { onBackPressed() })
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                "Back arrow",
+                Modifier.clickable { onBackPressed() })
             Text("Client")
         }
         Row {
